@@ -8,7 +8,8 @@ namespace System
 {
     public enum PageKey
     {
-        HomePage
+        HomePage,
+        PageRoot,
     }
 
     public static partial class E
@@ -16,10 +17,11 @@ namespace System
         public static Dictionary<PageKey, ContentTypeKey> DefailtPageContentTypeMap { get; set; } = new Dictionary<PageKey, ContentTypeKey>()
         {
             [PageKey.HomePage] = ContentTypeKey.Home,
+            [PageKey.PageRoot] = ContentTypeKey.Page,
         };
         public static Dictionary<PageKey, int> DefaltPageIdMap { get; set; } = new Dictionary<PageKey, int>()
         {
-
+            [PageKey.PageRoot] = 1065,
         };
         public static void InitContentPage(int homeId)
         {

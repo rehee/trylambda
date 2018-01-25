@@ -11,14 +11,22 @@ namespace Services.Models.Caches
         public virtual dynamic Content { get; set; }
         public DateTime Time { get; set; } = DateTime.Now;
         public bool KeepAlive { get; set; } = false;
-
-        public virtual void Set(dynamic content, bool? keepAlive = null, DateTime? time = null)
+        public virtual T GetContent<T>()
         {
-            this.Content = content;
+            return Content;
+        }
+        public void SetAliveAndTime(bool? keepAlive = null, DateTime? time = null)
+        {
             if (keepAlive != null)
                 KeepAlive = (bool)KeepAlive;
             if (time != null)
                 Time = (DateTime)time;
+        }
+        public virtual void Set(dynamic content, bool? keepAlive = null, DateTime? time = null)
+        {
+            SetAliveAndTime(keepAlive, time);
+            this.Content = content;
+            
         }
         public virtual T GetContentT<T>()
         {
@@ -32,8 +40,15 @@ namespace Services.Models.Caches
         {
             if (compire == null)
                 compire = DateTime.Now;
-            var result = ((DateTime)compire - model.Time).TotalMinutes < expireMin;
+            var result = ((DateTime)compire - model.Time).TotalMinutes > expireMin;
             return result;
+        }
+
+        public static bool IsExpire<T>(this IEnumerable<T> model, int expireMin, DateTime? compire = null) where T : CacheBase, new()
+        {
+            if (model == null || model.Count() <= 0)
+                return true;
+            return model.Where(b => b.IsExpire(expireMin, compire)).Count() > 0;
         }
         
     }

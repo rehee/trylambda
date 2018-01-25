@@ -38,7 +38,7 @@ namespace Services
             T key,
             bool? alive,
             int expireMin,
-            Func<K,bool> where = null,
+            Func<K, bool> where = null,
             Func<T, K, bool?, IDictionary<T, C>, K> updateCacheFunction = null
             ) where C : CacheBase, new()
         {
@@ -49,9 +49,7 @@ namespace Services
             var resultIncache = getFromCache(key, cache);
             if (where != null)
                 resultIncache.Where(b => where((K)b.Content));
-            if (resultIncache.Count() <= 0)
-                goto GetFromService;
-            if (resultIncache.Where(b => b.IsExpire(expireMin)).Count() > 0)
+            if (resultIncache.IsExpire<C>(expireMin))
                 goto GetFromService;
 
             result = resultIncache.Select(b => (K)b.Content);
@@ -66,16 +64,41 @@ namespace Services
             UpdateCache:
             foreach (var r in result)
             {
-                updateCacheFunction(getKeys(r), r, alive, cache);
+                updateCacheFunction(getKeys(r), r, alive, cacheInput);
             }
             return result;
         }
         public static IEnumerable<K> GetChildContentsByQuery<T, K, C>(
-            
-            
+            Func<Func<K, bool>, IEnumerable<K>> service,
+            Func<Func<K, bool>, IDictionary<T, C>, IEnumerable<C>> getFromCache,
+            Func<K, T> getKeys,
+            Func<K, bool> where,
+            bool? alive,
+            int expireMin,
+            IDictionary<T, C> cacheInput,
+            Func<T, K, bool?, IDictionary<T, C>, K> updateCacheFunction = null
             ) where C : CacheBase, new()
         {
-            return null;
+            if (updateCacheFunction == null)
+                updateCacheFunction = DefaultUpdateCache;
+            var cache = new Dictionary<T, C>(cacheInput);
+            IEnumerable<K> result;
+            var resultFromCache = getFromCache(where, cache);
+            if (resultFromCache.IsExpire<C>(expireMin))
+                goto GetFromServer;
+
+            result = resultFromCache.Select(b => b.GetContent<K>());
+            goto UpdateCache;
+
+            GetFromServer:
+            result = service(where);
+
+            UpdateCache:
+            foreach (var item in result)
+            {
+                updateCacheFunction(getKeys(item), item, alive, cacheInput);
+            }
+            return result;
         }
         public static K DefaultUpdateCache<T, K, C>(T key, K value, bool? alive, IDictionary<T, C> cache)
             where C : CacheBase, new()
@@ -105,6 +128,6 @@ namespace Services
             return value;
         }
 
-        
+
     }
 }

@@ -1,0 +1,10 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{
+	Layout = null;
+    var home = E.MyGetContentByType(ContentTypeKey.Home);
+}
+@foreach(var item in home)
+{
+    <p>@item.Name</p>
+}

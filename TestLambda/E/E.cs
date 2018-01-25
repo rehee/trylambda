@@ -100,6 +100,7 @@ namespace System
             InitEmail(E.GetHomePage);
             InitMember();
             InitCalture((int)calture);
+            InitMyContentGet(E.Services.ContentService,E.Services.ContentTypeService);
         }
 
 
