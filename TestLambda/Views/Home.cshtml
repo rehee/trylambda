@@ -1,10 +1,22 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
 @using ContentModels = Umbraco.Web.PublishedContentModels;
 @{
-	Layout = null;
-    var home = E.MyGetContentByType(ContentTypeKey.Home);
+    Layout = null;
+    var home = E.MyGetIContentsByType(ContentTypeKey.Page, b=>b.Name.Contains("1"),false, "get page 2 查询").OrderBy(b=>b.SortOrder);
+    SelfRecall.Start(E.GetAbsUrl(Request.Url));
+    var child = E.MyGetChildByRootId(E.DefaltPageIdMap[PageKey.PageRoot], null, null, "全部page child");
+    var page3 = E.MyGetContentsByIds(new List<int>() { E.DefaltPageIdMap[PageKey.PageRoot], E.DefaltPageIdMap[PageKey.HomePage] }, null, "home and page");
 }
-@foreach(var item in home)
+@foreach (var item in home)
+{
+    <p>@item.Name</p>
+}
+@foreach(var item in child)
+{
+    <p>@item.Name</p>
+}
+<hr />
+@foreach(var item in page3)
 {
     <p>@item.Name</p>
 }

@@ -1743,6 +1743,7 @@
     <Compile Include="CustomUmbracoApplication.cs" />
     <Compile Include="E\E.cs" />
     <Compile Include="E\EContentCache.cs" />
+    <Compile Include="E\EContentCacheCheck.cs" />
     <Compile Include="E\EContentCreat.cs" />
     <Compile Include="E\EContentGet.cs" />
     <Compile Include="E\EContentGetGeneral.cs" />

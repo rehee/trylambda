@@ -21,4 +21,10 @@ namespace TestLambda.Models
             this.Content = content;
         }
     }
+
+    public class CacheQuery : CacheBase
+    {
+
+    }
+
 }

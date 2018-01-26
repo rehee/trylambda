@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Timers;
 
 namespace System
@@ -9,6 +10,7 @@ namespace System
         static string url { get; set; } = "";
         static void activeUrl(string url)
         {
+            checks.ForEach(b => b());
             System.Net.HttpWebRequest myHttpWebRequest = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
             myHttpWebRequest.Timeout = 300000;
             myHttpWebRequest.KeepAlive = false;
@@ -36,13 +38,15 @@ namespace System
         #endregion
 
         static bool isRunning { get; set; } = false;
+        static List<Action> checks { get; set; }
         public static string Start(string url)
         {
             if (isRunning)
                 return "";
             SelfRecall.url = url;
             isRunning = true;
-            System.Timers.Timer myTimer = new System.Timers.Timer(1000 * 60 * 10);
+            checks = E.InitCheckFuncList(new List<dynamic>() { E.MyCache, E.MyQuerys }, 30);
+            System.Timers.Timer myTimer = new System.Timers.Timer(1000 * 60);
             myTimer.Elapsed += new System.Timers.ElapsedEventHandler(SelfRecall.Handler);
             myTimer.Enabled = true;
             myTimer.AutoReset = true;

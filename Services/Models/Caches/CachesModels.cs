@@ -44,7 +44,7 @@ namespace Services.Models.Caches
             return result;
         }
 
-        public static bool IsExpire<T>(this IEnumerable<T> model, int expireMin, DateTime? compire = null) where T : CacheBase, new()
+        public static bool IsExpire(this IEnumerable<CacheBase> model, int expireMin, DateTime? compire = null)
         {
             if (model == null || model.Count() <= 0)
                 return true;
